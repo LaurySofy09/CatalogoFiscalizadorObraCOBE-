@@ -1,0 +1,676 @@
+<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/COBE.Master" CodeBehind="wf_gj_AdministrarNvosCatalogos.aspx.vb" Inherits="CGR.COBE.UI.wf_gj_AdministrarNvosCatalogos" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <asp:TextBox ID="txtIdRegistro" runat="server" CssClass="Oculto"></asp:TextBox>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title text-center">ADMINISTRACIÓN DE CATÁLOGOS</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    Elija el Catálogo que desea:
+                </div>
+                <div class="col-sm-8 col-md-8 col-lg-8">
+                    <asp:DropDownList ID="ddl_Catalogo" runat="server" Font-Size="12pt" Font-Names="Arial" AutoPostBack="True"
+                        Width="474px">
+                        <asp:ListItem Value="..Seleccione">..Seleccione</asp:ListItem>
+                        <asp:ListItem Value="PE_L_TF_FianzaCumplimientoPor">Fianza De Cumplimiento Por</asp:ListItem>
+                        <asp:ListItem Value="PE_L_TF_EstadoDocSubsanado">Estado de Retorno de documento subsanado</asp:ListItem>
+                        <asp:ListItem Value="PE_L_TF_PorcentajeDeFianzaCumplimiento">Porcentaje que Garantiza la Fianza de Cumplimiento</asp:ListItem>
+                        <asp:ListItem Value="PE_L_TF_Recomendaciones">Recomendaciones de la Evaluaci&#243;n</asp:ListItem>
+                        <asp:ListItem Value="PE_C_TF_PARAMETROS_2">Cantidad de Filas por Grid (Avances, Soportes, Gestiones)</asp:ListItem>
+                        <asp:ListItem Value="PE_C_TF_PARAMETROS_2b">Adjuntar archivo en informes de avances y soportes</asp:ListItem>
+                        <asp:ListItem Value="Consorcios">Administración de Consorcios</asp:ListItem>
+                        <asp:ListItem Value="CM">Administración de Proveedores Sin RUC (CM)</asp:ListItem>
+                        <asp:ListItem Value="FOP">Validar tiempo de 2 años máx. entre la Fecha de Refrendo y Órden de Proceder</asp:ListItem>
+                        <asp:ListItem Value="NVC">Notas Vencimiento Contratos</asp:ListItem>
+                        <asp:ListItem Value="CFOP">Catálogo de Fiscalizador de obras por provincia</asp:ListItem>
+                    </asp:DropDownList>
+                </div>
+            </div>
+            <asp:Panel ID="TD_Controles" runat="server">
+                <br />
+                <div class="row">
+                    <div class="col-sm-2 col-md-2 col-lg-2">
+                        <asp:Label ID="lblDescrip" runat="server" Text="Descripción"></asp:Label>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-6">
+                        <asp:TextBox ID="txtDescripcion" runat="server" CssClass="MyTextbox"></asp:TextBox>
+                    </div>
+                    <div class="col-sm-2 col-md-2 col-lg-2">
+                        <asp:LinkButton ID="lnkGrabar" runat="server" CssClass="button" ToolTip="Grabar" Text="Grabar"></asp:LinkButton>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="TD_FianzaCumplimientoPor" runat="server">
+                <div class="panel-heading">
+                    <h2 class="panel-title text-center">FIANZA DE CUMPLIMIENTO POR</h2>
+                </div>
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="table-responsive"></div>
+                        <asp:GridView ID="dgTF_FianzaCumplimientoPor" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-condensed" AllowPaging="true" PageSize="20">
+                            <Columns>
+                                <asp:ButtonField DataTextField="ID" Visible="False" SortExpression="ID" HeaderText="No." CommandName="Select"></asp:ButtonField>
+                                <asp:BoundField DataField="ID" HeaderText="No." />
+                                <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+
+            </asp:Panel>
+            <asp:Panel ID="TD_EstadoDocSubsanado" runat="server">
+                <div class="panel-heading">
+                    <h2 class="panel-title text-center">ESTADO DE RETORNO DE DOCUMENTO SUBSANADO</h2>
+                </div>
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="table-responsive"></div>
+                        <asp:GridView ID="dgTF_EstadoDocSubsanado" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-condensed" AllowPaging="true" PageSize="20">
+                            <Columns>
+                                <asp:ButtonField DataTextField="ID" Visible="False" SortExpression="ID" HeaderText="No." CommandName="Select"></asp:ButtonField>
+                                <asp:BoundField DataField="ID" HeaderText="No." />
+                                <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="TD_PorcentajeDeFianzaCumplimiento" runat="server">
+                <div class="panel-heading">
+                    <h2 class="panel-title text-center">PORCENTAJE QUE GARANTIZA LA FIANZA DE CUMPLIMIENTO</h2>
+                </div>
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="table-responsive"></div>
+                        <asp:GridView ID="dgTF_PorcentajeDeFianzaCumplimiento" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-condensed" AllowPaging="true" PageSize="20">
+                            <Columns>
+                                <asp:ButtonField DataTextField="ID" Visible="False" SortExpression="ID" HeaderText="No." CommandName="Select"></asp:ButtonField>
+                                <asp:BoundField DataField="ID" HeaderText="No." />
+                                <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="TD_Recomendaciones" runat="server">
+                <div class="panel-heading">
+                    <h2 class="panel-title text-center">RECOMENDACIONES</h2>
+                </div>
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="table-responsive"></div>
+                        <asp:GridView ID="dgTF_Recomendaciones" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-condensed" AllowPaging="true" PageSize="20">
+                            <Columns>
+                                <asp:ButtonField DataTextField="ID" Visible="False" SortExpression="ID" HeaderText="No." CommandName="Select"></asp:ButtonField>
+                                <asp:BoundField DataField="ID" HeaderText="No." />
+                                <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="TD_TipoActoPublico" runat="server">
+                <div class="panel-heading">
+                    <h2 class="panel-title text-center">TIPO DE ACTO PÚBLICO</h2>
+                </div>
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="table-responsive"></div>
+                        <asp:GridView ID="dgTD_TipoActoPublico" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-condensed" AllowPaging="true" PageSize="20">
+                            <Columns>
+                                <asp:ButtonField DataTextField="ID" Visible="False" SortExpression="ID" HeaderText="No." CommandName="Select"></asp:ButtonField>
+                                <asp:BoundField DataField="ID" HeaderText="No." />
+                                <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="TD_FilasGrid" runat="server">
+                <div class="panel-heading">
+                    <h2 class="panel-title text-center">PARÁMETROS</h2>
+                </div>
+                <div class="row" id="tr_Filas1" runat="server">
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        Pantalla de inspección - Cant. Filas en el Historial de Avances por Diseño y/o Construcción:
+                    </div>
+                    <div class="col-md-8 col-lg-8 col-sm-8">
+                        <asp:DropDownList ID="ddlA_Const" runat="server" Width="300px" AutoPostBack="True">
+                            <asp:ListItem Value="5">5</asp:ListItem>
+                            <asp:ListItem Value="10">10</asp:ListItem>
+                            <asp:ListItem Value="15">15</asp:ListItem>
+                            <asp:ListItem Value="20">20</asp:ListItem>
+                            <asp:ListItem Value="25">25</asp:ListItem>
+                            <asp:ListItem Value="30">30</asp:ListItem>
+                            <asp:ListItem Value="35">35</asp:ListItem>
+                            <asp:ListItem Value="40">40</asp:ListItem>
+                            <asp:ListItem Value="45">45</asp:ListItem>
+                            <asp:ListItem Value="50">50</asp:ListItem>
+                            <asp:ListItem Value="55">55</asp:ListItem>
+                            <asp:ListItem Value="60">60</asp:ListItem>
+                            <asp:ListItem Value="100">100</asp:ListItem>
+                            <asp:ListItem Value="200">200</asp:ListItem>
+                            <asp:ListItem Value="300">300</asp:ListItem>
+                            <asp:ListItem Value="400">400</asp:ListItem>
+                            <asp:ListItem Value="500">500</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                </div>
+                <div class="row" id="tr_Filas2" runat="server">
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        Pantalla de inspección - Cant. Filas en el Historial de Avances por Suministros:
+                    </div>
+                    <div class="col-md-8 col-lg-8 col-sm-8">
+                        <asp:DropDownList ID="ddlA_Sum" runat="server" Width="300px" AutoPostBack="True">
+                            <asp:ListItem Value="5">5</asp:ListItem>
+                            <asp:ListItem Value="10">10</asp:ListItem>
+                            <asp:ListItem Value="15">15</asp:ListItem>
+                            <asp:ListItem Value="20">20</asp:ListItem>
+                            <asp:ListItem Value="25">25</asp:ListItem>
+                            <asp:ListItem Value="30">30</asp:ListItem>
+                            <asp:ListItem Value="35">35</asp:ListItem>
+                            <asp:ListItem Value="40">40</asp:ListItem>
+                            <asp:ListItem Value="45">45</asp:ListItem>
+                            <asp:ListItem Value="50">50</asp:ListItem>
+                            <asp:ListItem Value="55">55</asp:ListItem>
+                            <asp:ListItem Value="60">60</asp:ListItem>
+                            <asp:ListItem Value="100">100</asp:ListItem>
+                            <asp:ListItem Value="200">200</asp:ListItem>
+                            <asp:ListItem Value="300">300</asp:ListItem>
+                            <asp:ListItem Value="400">400</asp:ListItem>
+                            <asp:ListItem Value="500">500</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                </div>
+                <div class="row" id="tr_Filas3" runat="server">
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        Pantalla de Soportes de Cuentas - Cant. Filas en el Historial de Soportes por Diseño y/o Construcción:
+                    </div>
+                    <div class="col-md-8 col-lg-8 col-sm-8">
+                        <asp:DropDownList ID="ddlS_Const" runat="server" Width="300px" AutoPostBack="True">
+                            <asp:ListItem Value="5">5</asp:ListItem>
+                            <asp:ListItem Value="10">10</asp:ListItem>
+                            <asp:ListItem Value="15">15</asp:ListItem>
+                            <asp:ListItem Value="20">20</asp:ListItem>
+                            <asp:ListItem Value="25">25</asp:ListItem>
+                            <asp:ListItem Value="30">30</asp:ListItem>
+                            <asp:ListItem Value="35">35</asp:ListItem>
+                            <asp:ListItem Value="40">40</asp:ListItem>
+                            <asp:ListItem Value="45">45</asp:ListItem>
+                            <asp:ListItem Value="50">50</asp:ListItem>
+                            <asp:ListItem Value="55">55</asp:ListItem>
+                            <asp:ListItem Value="60">60</asp:ListItem>
+                            <asp:ListItem Value="100">100</asp:ListItem>
+                            <asp:ListItem Value="200">200</asp:ListItem>
+                            <asp:ListItem Value="300">300</asp:ListItem>
+                            <asp:ListItem Value="400">400</asp:ListItem>
+                            <asp:ListItem Value="500">500</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                </div>
+                <div class="row" id="tr_Filas4" runat="server">
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        Pantalla de Soportes de Cuentas - Cant. Filas en el Historial de Soportes por Suministros:
+                    </div>
+                    <div class="col-md-8 col-lg-8 col-sm-8">
+                        <asp:DropDownList ID="ddlS_Sum" runat="server" Width="300px" AutoPostBack="True">
+                            <asp:ListItem Value="5">5</asp:ListItem>
+                            <asp:ListItem Value="10">10</asp:ListItem>
+                            <asp:ListItem Value="15">15</asp:ListItem>
+                            <asp:ListItem Value="20">20</asp:ListItem>
+                            <asp:ListItem Value="25">25</asp:ListItem>
+                            <asp:ListItem Value="30">30</asp:ListItem>
+                            <asp:ListItem Value="35">35</asp:ListItem>
+                            <asp:ListItem Value="40">40</asp:ListItem>
+                            <asp:ListItem Value="45">45</asp:ListItem>
+                            <asp:ListItem Value="50">50</asp:ListItem>
+                            <asp:ListItem Value="55">55</asp:ListItem>
+                            <asp:ListItem Value="60">60</asp:ListItem>
+                            <asp:ListItem Value="100">100</asp:ListItem>
+                            <asp:ListItem Value="200">200</asp:ListItem>
+                            <asp:ListItem Value="300">300</asp:ListItem>
+                            <asp:ListItem Value="400">400</asp:ListItem>
+                            <asp:ListItem Value="500">500</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                </div>
+                <div class="row" id="tr_Filas5" runat="server">
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        Pantalla de Gestión de Cobro - Cant. Filas en el Historial de Gestiones:
+                    </div>
+                    <div class="col-md-8 col-lg-8 col-sm-8">
+                        <asp:DropDownList ID="ddl_Gestiones" runat="server" Width="300px" AutoPostBack="True">
+                            <asp:ListItem Value="5">5</asp:ListItem>
+                            <asp:ListItem Value="10">10</asp:ListItem>
+                            <asp:ListItem Value="15">15</asp:ListItem>
+                            <asp:ListItem Value="20">20</asp:ListItem>
+                            <asp:ListItem Value="25">25</asp:ListItem>
+                            <asp:ListItem Value="30">30</asp:ListItem>
+                            <asp:ListItem Value="35">35</asp:ListItem>
+                            <asp:ListItem Value="40">40</asp:ListItem>
+                            <asp:ListItem Value="45">45</asp:ListItem>
+                            <asp:ListItem Value="50">50</asp:ListItem>
+                            <asp:ListItem Value="55">55</asp:ListItem>
+                            <asp:ListItem Value="60">60</asp:ListItem>
+                            <asp:ListItem Value="100">100</asp:ListItem>
+                            <asp:ListItem Value="200">200</asp:ListItem>
+                            <asp:ListItem Value="300">300</asp:ListItem>
+                            <asp:ListItem Value="400">400</asp:ListItem>
+                            <asp:ListItem Value="500">500</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                </div>
+                <div class="row" id="tr_LoadFile" runat="server">
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        Validar que se adjunte un archivo en los informes de Avance y Soportes:
+                    </div>
+                    <div class="col-md-8 col-lg-8 col-sm-8">
+                        <asp:DropDownList ID="ddlAdjuntarArchivo" runat="server" Width="300px" AutoPostBack="True">
+                            <asp:ListItem Value="S">Sí</asp:ListItem>
+                            <asp:ListItem Value="N">No</asp:ListItem>
+
+                        </asp:DropDownList>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="PanelConsorcios" runat="server">
+                <hr />
+                <div class="row">
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        Consorcio: <span class="requerido">*</span>
+                    </div>
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        <textarea id="txtNombre" cols="45" rows="2" runat="server" placeholder="Ingrese el nombre y presione Buscar --->>"></textarea>
+                        <asp:TextBox ID="txtCodigo" runat="server" Visible="false"></asp:TextBox>
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-sm-6">
+                        <asp:LinkButton ID="lnkBuscarConsorcio" runat="server" CssClass="button" ToolTip="Ingrese parte del nombre y presione aqui para buscar">
+                                <span aria-hidden="true" class="glyphicon glyphicon-search"></span>Buscar
+                        </asp:LinkButton>
+                        <img src="../Imagenes/spacer.gif" />
+                        <asp:LinkButton ID="lnkLimpiarConsorcio" runat="server" CssClass="button" ToolTip="Limpiar datos">
+                                <span aria-hidden="true" ></span>Limpiar
+                        </asp:LinkButton>
+                    </div>
+                </div>
+
+                <div class="row" id="RUC" runat="server" visible="false">
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        Ruc:
+                    </div>
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+
+                        <asp:TextBox ID="txtRuc" runat="server"></asp:TextBox>
+                    </div>
+                </div>
+                <div class="row-custom">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="table-responsive"></div>
+                        <asp:GridView ID="idgProveedores" runat="server" CssClass="table table-bordered bs-table" AutoGenerateColumns="False"
+                            CellPadding="4" ForeColor="#333333" GridLines="None" AllowPaging="false" Font-Size="Smaller">
+                            <Columns>
+                                <asp:TemplateField HeaderText="Código">
+                                    <EditItemTemplate>
+                                        <asp:Label ID="Label1" runat="server" Text='<%# Eval("Codigo") %>'></asp:Label>
+                                    </EditItemTemplate>
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="lnkProveedor" runat="server" CausesValidation="False" CommandName="Select"
+                                            Text='<%# Eval("Codigo") %>'></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+
+                                <asp:BoundField DataField="Descripcion" HeaderText="Contratista" />
+                                <asp:BoundField DataField="Ruc" HeaderText="Ruc" />
+                            </Columns>
+
+                        </asp:GridView>
+                    </div>
+                </div>
+                <div class="alert alert-danger" id="AlertaDanger" runat="server" visible="false">
+                    <strong>Alerta!</strong> No existen Consorcios con esta condición....
+                </div>
+                <div class="row" id="DetalleConsorcio" runat="server">
+
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="table-responsive"></div>
+                        <asp:GridView ID="dgProvConsorcio" runat="server" AutoGenerateColumns="False" OnRowDeleting="OnRowDeleting" OnRowDataBound="OnRowDataBound"
+                            Caption="Proveedores participantes" CssClass="table table-striped table-bordered table-condensed" DataKeyNames="IDPROVEEDORPADRE, IDPROVEEDORHIJO">
+                            <Columns>
+
+                                <asp:BoundField DataField="IDPROVEEDORHIJO" HeaderText="Código" />
+                                <asp:BoundField DataField="NOMBRE" HeaderText="Nombre" />
+                                <asp:BoundField DataField="RUC" HeaderText="RUC" />
+                                <asp:BoundField DataField="IDUSUARIOREGISTRA" HeaderText="Registrado por" />
+                                <asp:BoundField DataField="FECHACAPTURA" HeaderText="Fecha" />
+                                <asp:BoundField DataField="IDPROVEEDORPADRE">
+                                    <HeaderStyle CssClass="hidden" />
+                                    <ItemStyle CssClass="hidden" />
+                                    <FooterStyle CssClass="hidden" />
+                                </asp:BoundField>
+                                <asp:CommandField ShowDeleteButton="True" ButtonType="Button" DeleteText="Eliminar" />
+
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+
+                </div>
+                <br />
+                <div class="row" id="FilaProveedores1" runat="server" visible="false">
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        Contratista participante: <span class="requerido">*</span>
+                    </div>
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        <textarea id="txtNombre_2" cols="45" rows="2" runat="server" placeholder="Ingrese el nombre y presione Buscar --->>"></textarea>
+                        <asp:TextBox ID="txtCodigo_2" runat="server" Visible="false"></asp:TextBox>
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-sm-6">
+                        <asp:LinkButton ID="lnkBuscarProveedor" runat="server" CssClass="button" ToolTip="Ingrese parte del nombre y presione aqui para buscar">
+                                <span aria-hidden="true" class="glyphicon glyphicon-search"></span>Buscar
+                        </asp:LinkButton>
+                        <img src="../Imagenes/spacer.gif" />
+                        <asp:LinkButton ID="lnkAddProveedorCM" runat="server" CssClass="button" ToolTip="Añadir proveedor de CM" Visible="false">
+                                <span aria-hidden="true" ></span>Añadir
+                        </asp:LinkButton>
+                    </div>
+                </div>
+                <div class="row" id="FilaProveedores3" runat="server">
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        Ruc:
+                    </div>
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+
+                        <asp:TextBox ID="txtRuc_2" runat="server"></asp:TextBox>
+                    </div>
+                </div>
+
+                <div class="row-custom" id="FilaProveedores2" runat="server" visible="false">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="table-responsive"></div>
+                        <asp:GridView ID="idgProveedores2" runat="server" CssClass="table table-bordered bs-table" AutoGenerateColumns="False"
+                            CellPadding="4" ForeColor="#333333" GridLines="None" AllowPaging="false" Font-Size="Smaller">
+                            <Columns>
+                                <asp:TemplateField HeaderText="Código">
+                                    <EditItemTemplate>
+                                        <asp:Label ID="Label1" runat="server" Text='<%# Eval("Codigo") %>'></asp:Label>
+                                    </EditItemTemplate>
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="lnkProveedor" runat="server" CausesValidation="False" CommandName="Select"
+                                            Text='<%# Eval("Codigo") %>'></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+
+                                <asp:BoundField DataField="Descripcion" HeaderText="Contratista" />
+                                <asp:BoundField DataField="Ruc" HeaderText="Ruc" />
+                            </Columns>
+
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="PanelProveedoresCM" runat="server">
+                <div class="row">
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        Código: 
+                    </div>
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        <asp:TextBox ID="txtCodigoCM" runat="server" ReadOnly="true" BackColor="#D8D8D8"></asp:TextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        Nombre: <span class="requerido">*</span>
+                    </div>
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        <textarea id="txtNombreProveedorCM" cols="45" rows="3" runat="server" placeholder="Ingrese el nombre"></textarea>
+
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-sm-6">
+                        <asp:LinkButton ID="lnkBuscarCM" runat="server" CssClass="button" ToolTip="Buscar registro">
+                                <span aria-hidden="true" class="glyphicon glyphicon-search"></span>Buscar
+                        </asp:LinkButton>
+                        <img src="../Imagenes/spacer.gif" />
+                        <asp:LinkButton ID="lnkGrabarProveedorCM" runat="server" CssClass="button" ToolTip="Grabar el registro">
+                                <span aria-hidden="true" ></span>Grabar
+                        </asp:LinkButton>
+                        <img src="../Imagenes/spacer.gif" />
+                        <asp:LinkButton ID="lnkLimpiarProvCM" runat="server" CssClass="button" ToolTip="Limpiar datos">
+                                <span aria-hidden="true" ></span>Limpiar
+                        </asp:LinkButton>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        Estado: 
+                    </div>
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        <asp:DropDownList ID="ddlEstadoProvCM" runat="server">
+                            <asp:ListItem Value="A" Selected="True">Activo</asp:ListItem>
+                            <asp:ListItem Value="B">Inactivo</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                </div>
+                <div class="row-custom">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="table-responsive"></div>
+                        <asp:GridView ID="gvProveedoresCM" runat="server" CssClass="table table-bordered bs-table" AutoGenerateColumns="False"
+                            CellPadding="4" ForeColor="#333333" GridLines="None" AllowPaging="false" Font-Size="Smaller">
+                            <Columns>
+                                <asp:TemplateField HeaderText="Código">
+                                    <EditItemTemplate>
+                                        <asp:Label ID="Label1" runat="server" Text='<%# Eval("Codigo") %>'></asp:Label>
+                                    </EditItemTemplate>
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="lnkProveedor" runat="server" CausesValidation="False" CommandName="Select"
+                                            Text='<%# Eval("Codigo") %>'></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+
+                                <asp:BoundField DataField="Nombre" HeaderText="Contratista" />
+                                <asp:BoundField DataField="IDUSUARIOREGISTRA" HeaderText="Registrado por" />
+                                <asp:BoundField DataField="FECHAREGISTRO" HeaderText="Fecha" />
+                                <asp:BoundField DataField="IdUsuarioModifica" HeaderText="Modificado por" />
+                                <asp:BoundField DataField="FechaModifica" HeaderText="Fecha" />
+                            </Columns>
+
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="PanelOrdenProceder" runat="server">
+
+                <div class="row">
+                    <div class="col-md-4 col-lg-4 col-sm-4">
+                        Validar tiempo de 2 años máx entre la Fecha de Refrendo y Órden de Proceder: 
+                    </div>
+
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        <asp:DropDownList ID="ddlOrdenProceder" runat="server" Width="300px" AutoPostBack="True">
+                            <asp:ListItem Value="S">Sí se valida</asp:ListItem>
+                            <asp:ListItem Value="N">No se valida</asp:ListItem>
+
+                        </asp:DropDownList>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="PanelParamNotasVencimiento" runat="server">
+                <br />
+                <div class="row">
+                    <div class="col-md-8 col-lg-8 col-sm-8">
+                        Parámetros para la generación de Notas de Vencimiento de Contratos de 60 a 90 días
+                    </div>
+                    <div class="col-sm-2 col-md-2 col-lg-2">
+                        <asp:LinkButton ID="lnkGrabarNotasParam" runat="server" CssClass="button" ToolTip="Grabar" Text="Grabar"></asp:LinkButton>
+                    </div>
+                    <br />
+                </div>
+                 <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        Director Nacional de Ingeniería:
+                    </div>
+                    <div class="col-sm-8 col-md-8 col-lg-8">
+                         <asp:TextBox ID="txtNombreDirector" runat="server" width="300px"></asp:TextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        Númeración de Nota:
+                    </div>
+                    <div class="col-sm-8 col-md-8 col-lg-8">
+                        <input id="txtNumNota" type="number" min="1" runat="server" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        Iniciales Nota Vencimiento Contratos:
+                    </div>
+                    <div class="col-sm-8 col-md-8 col-lg-8">
+                         <asp:TextBox ID="txtInicialesNota" runat="server"></asp:TextBox>
+                    </div>                   
+                </div>
+                 <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        Copia 1 Nota Vencimiento Contratos:
+                    </div>
+                    <div class="col-sm-8 col-md-8 col-lg-8">
+                         <asp:TextBox ID="txtCopia1" runat="server" Width="400px" TextMode="MultiLine"></asp:TextBox>
+                    </div>                   
+                </div>
+                 <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        Copia 2 Nota Vencimiento Contratos:
+                    </div>
+                    <div class="col-sm-8 col-md-8 col-lg-8">
+                         <asp:TextBox ID="txtCopia2" runat="server" Width="400px" TextMode="MultiLine"></asp:TextBox>
+                    </div>                   
+                </div>
+                 <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        Copia 3 Nota Vencimiento Contratos:
+                    </div>
+                    <div class="col-sm-8 col-md-8 col-lg-8">
+                         <asp:TextBox ID="txtCopia3" runat="server" Width="400" TextMode="MultiLine"></asp:TextBox>
+                    </div>                   
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="PanelAdminFiscObras" runat="server">
+               
+                <div class="row">
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        Fiscalizador de Obra: 
+                    </div>
+
+                    <div class="col-md-2 col-lg-2 col-sm-2" style="padding-left: 0px;">
+                        <asp:DropDownList ID="ddlFisca" runat="server" Width="250px" AutoPostBack="True" AppendDataBoundItems="false">
+                            <%--<asp:ListItem Value="-1" Text="..Seleccione"></asp:ListItem>--%>
+                        </asp:DropDownList>
+                    </div>
+                    <div class="col-md-1 col-lg-1 col-sm-1">
+                    </div>
+                    <div class="col-md-1 col-lg-1 col-sm-1">
+                        Provincia: 
+                    </div>
+
+                    <div class="col-md-2 col-lg-2 col-sm-2">
+                        <asp:DropDownList ID="ddlProvincia" runat="server" Width="250px" AutoPostBack="True">
+                            <%--<asp:ListItem Value="..Seleccione">..Seleccione</asp:ListItem>--%>
+                        </asp:DropDownList>
+                    </div>
+                    <div class="col-md-1 col-lg-1 col-sm-1">
+                    </div>
+                     <div class="col-md-1 col-lg-1 col-sm-1">
+                        Estado: 
+                    </div>
+                    <div class="col-md-1 col-lg-1 col-sm-1">
+                        <asp:DropDownList ID="ddlEstadoFiscObras" runat="server" Width="100px" AutoPostBack="True">
+                            <asp:ListItem Value="A">ACTIVO</asp:ListItem>
+                            <asp:ListItem Value="I">INACTIVO</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                </div>
+                <br />
+                 <div class="row">
+                    <div class="col-sm-1 col-md-1 col-lg-1">
+                        <asp:LinkButton ID="LnkGrabarFiscOb" runat="server" CssClass="button" ToolTip="Grabar" Text="Grabar"></asp:LinkButton>
+                    </div>
+                     <div class="col-sm-1 col-md-1 col-lg-1">
+                        <asp:LinkButton ID="LnkLimpiarFiscOb" runat="server" CssClass="button" ToolTip="Limpiar" Text="Limpiar"></asp:LinkButton>
+                    </div>
+                </div>
+                <br />
+                <div class="row-custom" id="divTablaFiscaObras" runat="server" visible="false">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+
+                        <h5 class="text-left">
+                            <strong>
+                                <asp:Label ID="lblNoFiscaObActivos" runat="server" Visible="false" Text="No existen fiscalizadores de obras activos."></asp:Label>
+                            </strong>
+                        </h5>
+
+                        <div class="table-responsive"></div>                   
+                        <asp:GridView ID="gvFiscaObrasA" runat="server" CssClass="table table-bordered bs-table" AutoGenerateColumns="False"
+                            CellPadding="4" ForeColor="#333333" GridLines="None" AllowPaging="True" PageSize="10" Font-Size="Smaller" ShowHeaderWhenEmpty="True"
+                            emptydatatext="No data available." 
+                            showheader="true" DataKeyNames="IdRegistro, NombreFisca, Provincia, Estado, IdUsuarioFiscalizador, IdProvincia">
+                            <Columns>                        
+                                <asp:TemplateField HeaderText="" HeaderStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="IdRegistro" runat="server" CausesValidation="False" ToolTip="Modificar estado" CommandName="Select" CommandArgument='<%# Container.DataItemIndex %>'><i class="fa fa-pencil"></i></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>                  
+                                <asp:BoundField DataField="NombreFisca" HeaderText="Fiscalizador" />
+                                <asp:BoundField DataField="Provincia" HeaderText="Provincia" />
+                                <asp:BoundField DataField="UsuarioAsignaNombre" HeaderText="Usuario Asigna" />
+                                <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Asignación" />
+                                <asp:BoundField DataField="Estado" HeaderText="Estado" />
+                                <asp:BoundField DataField="UsuarioModNombre" HeaderText="Usuario Modifica" />
+                                <asp:BoundField DataField="FechaModifica" HeaderText="Fecha Modifica" />
+                            </Columns>
+
+                        </asp:GridView>
+                    </div>
+                    <br />
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+
+                        <h5 class="text-left">
+                            <strong>
+                                <asp:Label ID="lblNoFiscaObInactivos" runat="server" Visible="false" Text="No existen fiscalizadores de obras inactivos."></asp:Label>
+                            </strong>
+                        </h5>
+
+                        <div class="table-responsive"></div>                   
+                        <asp:GridView ID="gvFiscaObrasI" runat="server" CssClass="table table-bordered bs-table" AutoGenerateColumns="False"
+                            CellPadding="4" ForeColor="#333333" GridLines="None" AllowPaging="True" PageSize="10" Font-Size="Smaller" ShowHeaderWhenEmpty="True"
+                            emptydatatext="No data available." 
+                            showheader="true" DataKeyNames="IdRegistro, NombreFisca, Provincia, Estado, IdUsuarioFiscalizador, IdProvincia">
+                            <Columns>
+                                <asp:TemplateField HeaderText="" HeaderStyle-HorizontalAlign="Center">
+                                     <ItemTemplate>
+                                        <asp:LinkButton ID="IdRegistro" runat="server" CausesValidation="False" CommandName="Select" ToolTip="Modificar estado" CommandArgument='<%# Container.DataItemIndex %>'><i class="fa fa-pencil"></i></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>     
+
+                                <asp:BoundField DataField="NombreFisca" HeaderText="Fiscalizador" />
+                                <asp:BoundField DataField="Provincia" HeaderText="Provincia" />
+                                <asp:BoundField DataField="UsuarioAsignaNombre" HeaderText="Usuario Asigna" />
+                                <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Asignación" />
+                                <asp:BoundField DataField="Estado" HeaderText="Estado" />
+                                <asp:BoundField DataField="UsuarioModNombre" HeaderText="Usuario Modifica" />
+                                <asp:BoundField DataField="FechaModifica" HeaderText="Fecha Modifica" />
+                            </Columns>
+
+                        </asp:GridView>
+                    </div>
+                </div>
+
+
+            </asp:Panel>
+        </div>
+
+    </div>
+</asp:Content>

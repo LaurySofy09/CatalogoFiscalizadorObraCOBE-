@@ -1,0 +1,741 @@
+Public Class wf_gj_AdministrarNvosCatalogos
+    Inherits System.Web.UI.Page
+#Region "datatable"
+    Dim dt As DataTable
+    Dim ds As DataSet
+#End Region
+#Region "servicios"
+    Dim liI As New lnInterfase
+    Dim IntLSD As New InterfazLSD
+
+#End Region
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not IsPostBack Then
+            ddl_Catalogo_SelectedIndexChanged(e, e)
+        End If
+    End Sub
+
+
+    Private Sub ddl_Catalogo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ddl_Catalogo.SelectedIndexChanged
+        'G.J. 2016 Dic
+        Me.AlertaDanger.Visible = False
+        txtDescripcion.Text = ""
+        Tables_OnOff(False)
+        If ddl_Catalogo.SelectedValue = "..Seleccione" Then Exit Sub
+        If ddl_Catalogo.SelectedValue = "PE_L_TF_FianzaCumplimientoPor" Then TD_FianzaCumplimientoPor.Visible = True
+        If ddl_Catalogo.SelectedValue = "PE_L_TF_EstadoDocSubsanado" Then TD_EstadoDocSubsanado.Visible = True
+        If ddl_Catalogo.SelectedValue = "PE_L_TF_PorcentajeDeFianzaCumplimiento" Then TD_PorcentajeDeFianzaCumplimiento.Visible = True
+        If ddl_Catalogo.SelectedValue = "PE_L_TF_Recomendaciones" Then TD_Recomendaciones.Visible = True
+        If ddl_Catalogo.SelectedValue = "Consorcios" Then
+            Me.PanelConsorcios.Visible = True
+            LimpiarSeccionConsorcios()
+        End If
+        If ddl_Catalogo.SelectedValue = "CM" Then
+            CargarPanelProveedoresCM()
+        End If
+        If ddl_Catalogo.SelectedValue = "FOP" Then
+            CargarPanelOP()
+        End If
+        If ddl_Catalogo.SelectedValue = "NVC" Then
+            CargarPanelNVC()
+            Return
+        End If
+        If ddl_Catalogo.SelectedValue = "CFOP" Then
+            CargarPanelAdminFiscObras()
+        End If
+        'If ddl_Catalogo.SelectedValue = "PE_L_TF_TipoActoPublico" Then TD_TipoActoPublico.Visible = True
+        If InStr(Me.ddl_Catalogo.SelectedValue, "TF_PARAMETROS") > 0 Then
+            TD_FilasGrid.Visible = True
+        End If
+        CargaGrid()
+    End Sub
+
+    Private Sub CargaGrid() 'G.J. 2016 Dic
+
+        txtDescripcion.Visible = True
+        lblDescrip.Visible = True
+        TD_Controles.Visible = True ': TD_Controles2.Visible = True
+        tr_LoadFile.Visible = True
+        Select Case ddl_Catalogo.SelectedValue
+            Case "PE_L_TF_FianzaCumplimientoPor"
+                dgTF_FianzaCumplimientoPor.DataSource = liI.ListatFianzaCumpPor()
+                dgTF_FianzaCumplimientoPor.DataBind()
+            Case "PE_L_TF_EstadoDocSubsanado"
+                dgTF_EstadoDocSubsanado.DataSource = liI.ListarEstadoDocSubsanado()
+                dgTF_EstadoDocSubsanado.DataBind()
+            Case "PE_L_TF_PorcentajeDeFianzaCumplimiento"
+                dgTF_PorcentajeDeFianzaCumplimiento.DataSource = liI.ListaPorcentaFC()
+                dgTF_PorcentajeDeFianzaCumplimiento.DataBind()
+            Case "PE_L_TF_Recomendaciones"
+                dgTF_Recomendaciones.DataSource = liI.ListarRecomendaciones()
+                dgTF_Recomendaciones.DataBind()
+                'Case "PE_L_TF_TipoActoPublico" ' Este catalogo no se actualiza por esta via... se utiliza el original con tabla de otra estructura
+                '    dgTD_TipoActoPublico.DataSource = wsC.sfListar(ddl_Catalogo.SelectedValue)
+                '    dgTD_TipoActoPublico.DataBind()
+            Case "PE_C_TF_PARAMETROS_2"
+                GoTo AtencionAParametos
+            Case "PE_C_TF_PARAMETROS_2b"
+                GoTo AtencionAParametos
+            Case "Consorcios"
+                TD_Controles.Visible = False
+            Case "CM"
+                TD_Controles.Visible = False
+            Case "FOP"
+                txtDescripcion.Visible = False
+                lblDescrip.Visible = False
+            Case "CFOP"
+                txtDescripcion.Visible = False
+                lblDescrip.Visible = False
+        End Select
+        Exit Sub
+
+AtencionAParametos:
+        Dim dsFilas As DataTable
+        txtDescripcion.Visible = False
+        lblDescrip.Visible = False
+        Dim lsArray(1) As String
+        lsArray(0) = "-1"
+        lsArray(1) = "0"
+        dsFilas = liI.BuscarParametro(lsArray)
+        With dsFilas
+            ddlAdjuntarArchivo.SelectedValue = .Rows(0).Item("Valor")
+            ddlA_Const.SelectedValue = .Rows(1).Item("Valor")
+            ddlA_Sum.SelectedValue = .Rows(2).Item("Valor")
+            ddlS_Const.SelectedValue = .Rows(3).Item("Valor")
+            ddlS_Sum.SelectedValue = .Rows(4).Item("Valor")
+            ddl_Gestiones.SelectedValue = .Rows(5).Item("Valor")
+        End With
+        If ddl_Catalogo.SelectedValue = "PE_C_TF_PARAMETROS_2b" Then
+            FilasParametros_OnOF(False)
+        Else
+            FilasParametros_OnOF(True)
+        End If
+    End Sub
+
+    Private Sub Tables_OnOff(ByVal bVal As Boolean) 'G.J. 2016 Dic
+        TD_Controles.Visible = bVal
+        'TD_Controles2.Visible = bVal
+        TD_FianzaCumplimientoPor.Visible = bVal
+        TD_EstadoDocSubsanado.Visible = bVal
+        TD_PorcentajeDeFianzaCumplimiento.Visible = bVal
+        TD_Recomendaciones.Visible = bVal
+        TD_TipoActoPublico.Visible = bVal
+        TD_FilasGrid.Visible = bVal
+        PanelOrdenProceder.Visible = bVal
+        txtDescripcion.Visible = True
+        lblDescrip.Visible = True
+        Me.PanelConsorcios.Visible = bVal
+        Me.PanelProveedoresCM.Visible = bVal
+        Me.PanelParamNotasVencimiento.Visible = bVal
+        PanelAdminFiscObras.Visible = bVal
+    End Sub
+
+    Sub FilasParametros_OnOF(ByVal bVal As Boolean)
+        tr_LoadFile.Visible = IIf(bVal, False, True)
+        tr_Filas1.Visible = bVal
+        tr_Filas2.Visible = bVal
+        tr_Filas3.Visible = bVal
+        tr_Filas4.Visible = bVal
+        tr_Filas5.Visible = bVal
+        'PanelOrdenProceder.Visible = bVal
+    End Sub
+
+    Private Sub lnkGrabar_Click(sender As Object, e As EventArgs) Handles lnkGrabar.Click
+        'G.J. 2016 Dic
+
+        Try
+            If ddl_Catalogo.SelectedValue = "FOP" Then
+                Act_TF_Parametros(44, Me.ddlOrdenProceder.SelectedValue)
+                Funciones.ModalAlert("Registro actualizado")
+                Return
+            End If
+            If txtDescripcion.Text.Trim = "" And InStr(Me.ddl_Catalogo.SelectedValue, "TF_PARAMETROS") = 0 Then
+                Funciones.ModalAlert("Contenido del campo Descripcion en blanco, corrija y vuelva a intentar")
+                Exit Sub
+            End If
+            Dim lsArray(0) As String
+            lsArray(0) = txtDescripcion.Text.Trim
+            If InStr(Me.ddl_Catalogo.SelectedValue, "TF_PARAMETROS") = 0 Then
+                'ds = localWs.fListar(Replace(ddl_Catalogo.SelectedValue, "_L_", "_I_"), New String() {txtDescripcion.Text})
+                liI.MantenimientoNuevoCat(Replace(ddl_Catalogo.SelectedValue, "_L_", "_I_"), lsArray)
+                CargaGrid()
+                Funciones.ModalAlert("Se ha agregado el elemento : " & Me.txtDescripcion.Text & ", satisfactoriamente al catálogo seleccionado. Revise el catálogo para confirmar")
+                txtDescripcion.Text = ""
+            Else
+                If Me.ddl_Catalogo.SelectedValue = "PE_C_TF_PARAMETROS_2b" Then
+                    Act_TF_Parametros(19, ddlAdjuntarArchivo.SelectedValue)
+                Else
+                    Act_TF_Parametros(28, ddlA_Const.SelectedValue * 1)
+                    Act_TF_Parametros(29, ddlA_Sum.SelectedValue * 1)
+                    Act_TF_Parametros(30, ddlS_Const.SelectedValue * 1)
+                    Act_TF_Parametros(31, ddlS_Sum.SelectedValue * 1)
+                    Act_TF_Parametros(32, ddl_Gestiones.SelectedValue * 1)
+                End If
+                ddl_Catalogo_SelectedIndexChanged(e, e)
+                If Me.ddl_Catalogo.SelectedValue = "PE_C_TF_PARAMETROS_2b" Then
+                    Funciones.ModalAlert("Registro actualizado")
+                Else
+                    Funciones.ModalAlert("Se ha actualizado los valores de las filas a mostrar en los Grid de información,  satisfactoriamente")
+                End If
+            End If
+        Catch ex As Exception
+            Throw New Exception(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub Act_TF_Parametros(ByVal iSec As Integer, ByVal sVal As String)
+        Dim lsArray(3) As String
+        lsArray(0) = "1"
+        lsArray(1) = iSec
+        lsArray(2) = ""
+        lsArray(3) = sVal
+        liI.ActualizarParametros(lsArray)
+    End Sub
+
+    Private Sub lnkBuscarConsorcio_Click(sender As Object, e As EventArgs) Handles lnkBuscarConsorcio.Click
+        Me.fRecuperarProveedor()
+    End Sub
+
+    Private Sub idgProveedores_SelectedIndexChanged(sender As Object, e As EventArgs) Handles idgProveedores.SelectedIndexChanged
+        Dim lsCodigo As String = String.Empty
+        Dim lnk As LinkButton
+        Dim row As GridViewRow = idgProveedores.SelectedRow
+        lnk = row.Cells(1).FindControl("lnkProveedor")
+        lsCodigo = lnk.Text
+        Me.txtCodigo.Text = lsCodigo
+        Me.txtNombre.Value = HttpUtility.HtmlDecode(row.Cells(1).Text)
+        Me.txtRuc.Text = row.Cells(2).Text
+        Me.idgProveedores.Visible = False
+        Me.RUC.Visible = True
+        ConsultarParticipantes(Me.txtCodigo.Text)
+        Me.FilaProveedores1.Visible = True
+        Me.FilaProveedores2.Visible = True
+        FilaProveedores3.Visible = True
+    End Sub
+
+    Private Sub ConsultarParticipantes(ByVal lsCodigo As String)
+        Dim dtDetCon As DataTable
+        dtDetCon = liI.ConsultaDetalleConsorcio(lsCodigo)
+        If dtDetCon.Rows.Count > 0 Then
+            Me.dgProvConsorcio.DataSource = dtDetCon
+            Me.dgProvConsorcio.DataBind()
+            Me.DetalleConsorcio.Visible = True
+        Else
+            Me.dgProvConsorcio.DataSource = Nothing
+            Me.dgProvConsorcio.DataBind()
+            Me.DetalleConsorcio.Visible = False
+        End If
+    End Sub
+
+    Protected Sub OnRowDataBound(sender As Object, e As GridViewRowEventArgs)
+
+    End Sub
+
+    Protected Sub OnRowDeleting(sender As Object, e As GridViewDeleteEventArgs)
+
+        Dim dtB As DataTable
+        Dim index As Integer = Convert.ToInt32(e.RowIndex)
+        Dim lsCodigoP As String = dgProvConsorcio.DataKeys(index)("IDPROVEEDORPADRE")
+        Dim lsCodigoH As String = dgProvConsorcio.DataKeys(index)("IDPROVEEDORHIJO")
+
+        Dim lsArray(2) As String
+        lsArray(0) = lsCodigoP
+        lsArray(1) = lsCodigoH
+        lsArray(2) = Funciones.GetUsuarioIdUsuarioRegistra.ToString.Trim
+        dtB = liI.BorrarProveedorConsorcio(lsArray)
+        ConsultarParticipantes(Me.txtCodigo.Text)
+
+    End Sub
+
+    Private Sub lnkBuscarProveedor_Click(sender As Object, e As EventArgs) Handles lnkBuscarProveedor.Click
+        Me.fRecuperarProveedor2()
+    End Sub
+
+    Public Sub fRecuperarProveedor2()
+
+        'dt = liI.BuscarProveedorNombreRuc(Me.txtNombre_2.Value, Me.txtRuc_2.Text)
+        dt = liI.BuscarProveedorNombreSolo(Me.txtNombre_2.Value)
+        Me.idgProveedores2.DataSource = dt
+        Me.idgProveedores2.DataBind()
+        Me.idgProveedores2.Caption = "Seleccione el registro para incluirlo en el Consorcio"
+        If dt.Rows.Count > 1 Then
+            Me.idgProveedores2.Visible = True
+        ElseIf dt.Rows.Count = 1 Then
+            Me.txtCodigo_2.Text = DirectCast(idgProveedores2.Rows(0).Cells(0).Controls(1), LinkButton).Text
+            Me.txtNombre_2.Value = HttpUtility.HtmlDecode(idgProveedores2.Rows(0).Cells(1).Text)
+        Else
+            Me.idgProveedores2.Visible = False
+            Funciones.ModalAlert("No se encontraron registros relacionados")
+        End If
+        If UCase(Me.txtRuc_2.Text.Trim) = "CM" Then
+            Me.lnkAddProveedorCM.Visible = True
+        End If
+    End Sub
+
+    Public Sub fRecuperarProveedor()
+        Me.AlertaDanger.Visible = False
+        Me.idgProveedores.Visible = False
+        dt = liI.BuscarProveedorNombreSolo(Me.txtNombre.Value)
+        Me.idgProveedores.DataSource = dt
+        Me.idgProveedores.DataBind()
+        If dt.Rows.Count > 1 Then
+            Me.idgProveedores.Visible = True
+        ElseIf dt.Rows.Count = 1 Then
+            Me.txtCodigo.Text = DirectCast(idgProveedores.Rows(0).Cells(0).Controls(1), LinkButton).Text.Trim
+            Me.txtNombre.Value = HttpUtility.HtmlDecode(idgProveedores.Rows(0).Cells(1).Text.Trim)
+            Me.txtRuc.Text = idgProveedores.Rows(0).Cells(2).Text
+            Me.RUC.Visible = True
+            Me.FilaProveedores1.Visible = True
+            Me.FilaProveedores2.Visible = True
+            FilaProveedores3.Visible = True
+            ConsultarParticipantes(Me.txtCodigo.Text)
+
+        Else
+            Me.idgProveedores.Visible = False
+            Me.AlertaDanger.Visible = True
+            Me.FilaProveedores1.Visible = False
+            Me.FilaProveedores2.Visible = False
+            FilaProveedores3.Visible = False
+        End If
+    End Sub
+
+    Private Sub idgProveedores2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles idgProveedores2.SelectedIndexChanged
+        Dim lsCodigo As String = String.Empty
+        Dim lsNombre As String = String.Empty
+        Dim lsRuc As String = String.Empty
+        Dim lnk As LinkButton
+        Dim row As GridViewRow = idgProveedores2.SelectedRow
+        lnk = row.Cells(1).FindControl("lnkProveedor")
+        lsCodigo = lnk.Text
+        lsNombre = HttpUtility.HtmlDecode(row.Cells(1).Text)
+        lsRuc = row.Cells(2).Text
+
+        If lsCodigo.Trim <> "0" Then
+            Dim lsArray(4) As String
+            lsArray(0) = lsCodigo
+            lsArray(1) = Me.txtCodigo.Text
+            lsArray(2) = lsNombre
+            lsArray(3) = lsRuc
+            lsArray(4) = Funciones.GetUsuarioIdUsuarioRegistra.ToString.Trim
+            dt = liI.InsertarProveedorConsorcio(lsArray)
+            ConsultarParticipantes(Me.txtCodigo.Text)
+            Me.txtCodigo_2.Text = ""
+            Me.txtNombre_2.Value = ""
+            Me.idgProveedores2.DataSource = Nothing
+            Me.idgProveedores2.DataBind()
+        End If
+
+
+    End Sub
+
+    Private Sub lnkLimpiarConsorcio_Click(sender As Object, e As EventArgs) Handles lnkLimpiarConsorcio.Click
+        LimpiarSeccionConsorcios()
+    End Sub
+
+    Private Sub LimpiarSeccionConsorcios()
+        Me.txtCodigo.Text = ""
+        Me.txtCodigo_2.Text = ""
+        Me.txtNombre.Value = ""
+        Me.txtNombre_2.Value = ""
+        Me.txtRuc.Text = ""
+        Me.txtRuc_2.Text = ""
+        Me.idgProveedores.DataSource = Nothing
+        Me.idgProveedores.DataBind()
+        Me.idgProveedores2.DataSource = Nothing
+        Me.idgProveedores2.DataBind()
+        Me.dgProvConsorcio.DataSource = Nothing
+        Me.dgProvConsorcio.DataBind()
+        Me.DetalleConsorcio.Visible = False
+        Me.FilaProveedores1.Visible = False
+        Me.FilaProveedores2.Visible = False
+        FilaProveedores3.Visible = False
+    End Sub
+
+    Private Sub lnkAddProveedorCM_Click(sender As Object, e As EventArgs) Handles lnkAddProveedorCM.Click
+        Dim lsCodigo As String = String.Empty
+        Dim lsNombre As String = String.Empty
+        Dim lsRuc As String = String.Empty
+        lsCodigo = UCase(Me.txtRuc_2.Text.Trim)
+        If lsCodigo = "CM" Then
+            Funciones.ModalAlert("Debe ingresar la cédula o identificación para este proveedor")
+            Return
+        End If
+        lsNombre = Me.txtNombre_2.Value
+        If lsNombre = "Proveedor de Compra Menor" Then
+            Funciones.ModalAlert("Debe ingresar el nombre del proveedor")
+            Return
+        End If
+        lsRuc = lsCodigo
+
+        Dim lsArray(4) As String
+        lsArray(0) = "CM"
+        lsArray(1) = Me.txtCodigo.Text
+        lsArray(2) = lsNombre
+        lsArray(3) = lsRuc
+        lsArray(4) = Funciones.GetUsuarioIdUsuarioRegistra.ToString.Trim
+
+        dt = liI.InsertarProveedorConsorcio(lsArray)
+        ConsultarParticipantes(Me.txtCodigo.Text)
+        Me.txtCodigo_2.Text = ""
+        Me.txtNombre_2.Value = ""
+        Me.idgProveedores2.DataSource = Nothing
+        Me.idgProveedores2.DataBind()
+        Me.txtRuc_2.Text = ""
+        lnkAddProveedorCM.Visible = False
+        ConsultarParticipantes(Me.txtCodigo.Text)
+    End Sub
+
+    Private Sub CargarPanelProveedoresCM()
+        Me.PanelProveedoresCM.Visible = True
+        Me.lnkBuscarCM.Visible = False
+        Dim dtCM As New DataTable
+        dtCM = liI.ListarProveedoresCM()
+        If dtCM.Rows.Count > 0 Then
+            Me.gvProveedoresCM.DataSource = dtCM
+            Me.gvProveedoresCM.DataBind()
+            ViewState("ProveedoresCM") = dtCM
+            Me.lnkBuscarCM.Visible = True
+        End If
+        ViewState("ModoCM") = "Nuevo"
+    End Sub
+
+    Private Sub CargarPanelOP()
+        Dim dsFilas As DataTable
+        Me.PanelOrdenProceder.Visible = True
+        txtDescripcion.Visible = False
+        lblDescrip.Visible = False
+        Dim lsValor As String = String.Empty
+        Dim lsArray(1) As String
+        lsArray(0) = "1"
+        lsArray(1) = "44"
+        dsFilas = liI.BuscarParametro(lsArray)
+        If dsFilas.Rows.Count > 0 Then
+            lsValor = dsFilas.Rows(0)(1)
+            Me.ddlOrdenProceder.SelectedValue = lsValor
+        End If
+
+    End Sub
+
+    Private Sub CargarPanelNVC()
+        txtDescripcion.Visible = False
+        lblDescrip.Visible = False
+        Me.TD_FianzaCumplimientoPor.Visible = False
+        Me.TD_EstadoDocSubsanado.Visible = False
+        Me.TD_PorcentajeDeFianzaCumplimiento.Visible = False
+        Me.TD_Recomendaciones.Visible = False
+        Me.TD_TipoActoPublico.Visible = False
+        Me.TD_FilasGrid.Visible = False
+        Me.PanelConsorcios.Visible = False
+        Me.PanelProveedoresCM.Visible = False
+        Me.PanelOrdenProceder.Visible = False
+        Me.PanelAdminFiscObras.Visible = False
+        Me.PanelParamNotasVencimiento.Visible = True
+        Dim lsArray(1) As String
+        lsArray(0) = "1"
+        lsArray(1) = "45"
+        dt = liI.BuscarParametro(lsArray)
+        If dt.Rows.Count > 0 Then
+            Me.txtNumNota.Value = dt.Rows(0)(1)
+        End If
+        lsArray(0) = "1"
+        lsArray(1) = "39"
+        dt = liI.BuscarParametro(lsArray)
+        If dt.Rows.Count > 0 Then
+            Me.txtInicialesNota.Text = dt.Rows(0)(1)
+        End If
+        lsArray(0) = "1"
+        lsArray(1) = "40"
+        dt = liI.BuscarParametro(lsArray)
+        If dt.Rows.Count > 0 Then
+            Me.txtCopia1.Text = dt.Rows(0)(1)
+        End If
+        lsArray(0) = "1"
+        lsArray(1) = "41"
+        dt = liI.BuscarParametro(lsArray)
+        If dt.Rows.Count > 0 Then
+            Me.txtCopia2.Text = dt.Rows(0)(1)
+        End If
+        lsArray(0) = "1"
+        lsArray(1) = "42"
+        dt = liI.BuscarParametro(lsArray)
+        If dt.Rows.Count > 0 Then
+            Me.txtCopia3.Text = dt.Rows(0)(1)
+        End If
+        lsArray(0) = "1"
+        lsArray(1) = "11"
+        dt = liI.BuscarParametro(lsArray)
+        If dt.Rows.Count > 0 Then
+            Me.txtNombreDirector.Text = dt.Rows(0)(1)
+        End If
+
+    End Sub
+
+    Private Sub CargarPanelAdminFiscObras()
+        lnkGrabar.Visible = False
+        Me.PanelAdminFiscObras.Visible = True
+        divTablaFiscaObras.Visible = True
+
+        dt = liI.ListaFiscalizadores(4)
+        Me.ddlFisca.DataSource = dt
+        Me.ddlFisca.DataTextField = "nombre"
+        Me.ddlFisca.DataValueField = "IdUsuarioRegistra"
+        Me.ddlFisca.DataBind()
+        ddlFisca.Items.Insert(0, New ListItem("..Seleccione", -1))
+
+        dt = liI.ListarProvinciaCobe(4)
+        Me.ddlProvincia.DataSource = dt
+        Me.ddlProvincia.DataTextField = "Descripcion"
+        Me.ddlProvincia.DataValueField = "Codigo"
+        Me.ddlProvincia.DataBind()
+        ddlProvincia.Items.Insert(0, New ListItem("..Seleccione", -1))
+
+        Dim dtCFOP As New DataTable
+        dtCFOP = IntLSD.ListarFiscaObrasCFOP_A()
+        If dtCFOP.Rows.Count > 0 Then
+            gvFiscaObrasA.DataSource = dtCFOP
+            gvFiscaObrasA.DataBind()
+            'ViewState("FiscalizadoresCFOP") = dtCFOP
+            lblNoFiscaObActivos.Visible = False
+            gvFiscaObrasA.Visible = True
+        Else
+            lblNoFiscaObActivos.Visible = True
+            gvFiscaObrasA.DataSource = Nothing
+            gvFiscaObrasA.DataBind()
+            gvFiscaObrasA.Visible = False
+        End If
+
+        Dim dtCFOP2 As New DataTable
+        dtCFOP2 = IntLSD.ListarFiscaObrasCFOP_I()
+        If dtCFOP2.Rows.Count > 0 Then
+            gvFiscaObrasI.DataSource = dtCFOP2
+            gvFiscaObrasI.DataBind()
+            'ViewState("FiscalizadoresCFOP") = dtCFOP
+            lblNoFiscaObInactivos.Visible = False
+            gvFiscaObrasI.Visible = True
+        Else
+            lblNoFiscaObInactivos.Visible = True
+            gvFiscaObrasI.DataSource = Nothing
+            gvFiscaObrasI.DataBind()
+            gvFiscaObrasI.Visible = False
+        End If
+        ViewState("ModoCFOP") = "Nuevo"
+    End Sub
+
+    Private Sub lnkBuscarCM_Click(sender As Object, e As EventArgs) Handles lnkBuscarCM.Click
+        Dim dtCM As DataTable = CType(ViewState("ProveedoresCM"), DataTable)
+        Dim dvCM As DataView = dtCM.DefaultView
+        Dim lsNombreCM As String = Me.txtNombreProveedorCM.Value.Trim
+        If lsNombreCM = "" Then
+            Funciones.ModalAlert("No ha ingresado el nombre a buscar")
+            Return
+        End If
+        Dim filter As New StringBuilder()
+        If Not (String.IsNullOrEmpty(lsNombreCM)) Then
+            filter.Append("Nombre Like '%" & lsNombreCM & "%'")
+        End If
+
+        dvCM.RowFilter = filter.ToString()
+        If dvCM.Count > 0 Then
+            Me.gvProveedoresCM.DataSource = dvCM
+            Me.gvProveedoresCM.DataBind()
+            ViewState("ProveedoresCM") = dvCM.ToTable()
+            Me.lnkBuscarCM.Visible = True
+        Else
+            Funciones.ModalAlert("No ha encontrado el registro")
+            Return
+        End If
+    End Sub
+
+    Private Sub gvProveedoresCM_SelectedIndexChanged(sender As Object, e As EventArgs) Handles gvProveedoresCM.SelectedIndexChanged
+        Dim row As GridViewRow = gvProveedoresCM.SelectedRow
+        Dim lnk As LinkButton
+        lnk = row.Cells(1).FindControl("lnkProveedor")
+        Me.txtCodigoCM.Text = lnk.Text
+        txtNombreProveedorCM.Value = HttpUtility.HtmlDecode(row.Cells(1).Text)
+        ViewState("ModoCM") = "Modifica"
+    End Sub
+
+    Private Sub lnkGrabarProveedorCM_Click(sender As Object, e As EventArgs) Handles lnkGrabarProveedorCM.Click
+        Dim dtAct As DataTable
+        If Me.txtNombreProveedorCM.Value.Trim = "" Then
+            Funciones.ModalAlert("El nombre del proveedor esta en blanco, verifique")
+            Return
+        End If
+
+        If ViewState("ModoCM") = "Nuevo" Then
+            Dim lsArray(3) As String
+            lsArray(0) = Me.txtNombreProveedorCM.Value.Trim
+            lsArray(1) = "CM"
+            lsArray(2) = ddlEstadoProvCM.SelectedValue
+            lsArray(3) = Funciones.GetUsuarioIdUsuarioRegistra.ToString.Trim
+            dtAct = liI.InsertarProveedorCM(lsArray)
+        Else
+            Dim lsArray(4) As String
+            lsArray(0) = Me.txtCodigoCM.Text.Trim
+            lsArray(1) = Me.txtNombreProveedorCM.Value.Trim
+            lsArray(2) = "CM"
+            lsArray(3) = ddlEstadoProvCM.SelectedValue
+            lsArray(4) = Funciones.GetUsuarioIdUsuarioRegistra.ToString.Trim
+            dtAct = liI.ActualizarProveedorCM(lsArray)
+
+        End If
+        Funciones.ModalAlert("Registro actualizado")
+        LimpiarDatosCM()
+    End Sub
+
+    Private Sub LimpiarDatosCM()
+        Me.txtCodigoCM.Text = ""
+        Me.txtNombreProveedorCM.Value = ""
+        CargarPanelProveedoresCM()
+    End Sub
+
+    Private Sub lnkLimpiarProvCM_Click(sender As Object, e As EventArgs) Handles lnkLimpiarProvCM.Click
+        LimpiarDatosCM()
+    End Sub
+
+    Private Sub lnkGrabarNotasParam_Click(sender As Object, e As EventArgs) Handles lnkGrabarNotasParam.Click
+        If (Me.txtInicialesNota.Text.Trim = "" Or Me.txtCopia1.Text.Trim = "" Or Me.txtCopia2.Text.Trim = "" Or Me.txtCopia3.Text.Trim = "" Or Me.txtNombreDirector.Text.Trim = "") Then
+            Funciones.ModalAlert("Error detectado en los valores, favor revisar")
+            Return
+        End If
+        Dim lsArray(3) As String
+        lsArray(0) = "1"
+        lsArray(1) = "39"
+        lsArray(2) = ""
+        lsArray(3) = Me.txtInicialesNota.Text
+        liI.ActualizarParametros(lsArray)
+
+        lsArray(0) = "1"
+        lsArray(1) = "40"
+        lsArray(2) = ""
+        lsArray(3) = Me.txtCopia1.Text
+        liI.ActualizarParametros(lsArray)
+
+        lsArray(0) = "1"
+        lsArray(1) = "41"
+        lsArray(2) = ""
+        lsArray(3) = Me.txtCopia2.Text
+        liI.ActualizarParametros(lsArray)
+
+        lsArray(0) = "1"
+        lsArray(1) = "42"
+        lsArray(2) = ""
+        lsArray(3) = Me.txtCopia3.Text
+        liI.ActualizarParametros(lsArray)
+
+        lsArray(0) = "1"
+        lsArray(1) = "45"
+        lsArray(2) = ""
+        lsArray(3) = Me.txtNumNota.Value
+        liI.ActualizarParametros(lsArray)
+
+        lsArray(0) = "1"
+        lsArray(1) = "11"
+        lsArray(2) = ""
+        lsArray(3) = Me.txtNombreDirector.Text.Trim
+        liI.ActualizarParametros(lsArray)
+
+        Funciones.ModalAlert("Información actualizada con éxito")
+        CargarPanelNVC()
+    End Sub
+
+    Private Sub LnkGrabarFiscOb_Click(sender As Object, e As EventArgs) Handles LnkGrabarFiscOb.Click
+        Dim dtAct As DataTable
+        Dim dtAct2 As DataTable
+
+        Dim val(1) As String
+        val(0) = ddlFisca.SelectedValue
+        val(1) = ddlProvincia.SelectedValue
+        dtAct2 = IntLSD.ValidaExistenciaFiscaProv(val)
+
+        If ((ddlFisca.SelectedIndex = 0) And (ViewState("ModoCFOP") = "Nuevo")) Then
+            Funciones.ModalAlert("No ha hecho selección del fiscalizador de obras, verifique")
+        ElseIf ((ddlProvincia.SelectedIndex = 0) And (ViewState("ModoCFOP") = "Nuevo")) Then
+            Funciones.ModalAlert("No ha hecho selección de la provincia, verifique")
+        ElseIf (dtAct2(0)("Registro") = 1) And ((ViewState("ModoCFOP") = "Nuevo")) Then
+            Funciones.ModalAlert("Ya existe un registro para el fiscalizador y provincia seleccionada, verifique")
+        ElseIf ((dtAct2(0)("Registro") = 0) And (ViewState("ModoCFOP") = "Nuevo")) Then
+            Dim lsArray(3) As String
+            lsArray(0) = ddlFisca.SelectedValue
+            lsArray(1) = ddlProvincia.SelectedValue
+            lsArray(2) = ddlEstadoFiscObras.SelectedValue
+            lsArray(3) = Funciones.GetUsuarioIdUsuarioRegistra.ToString.Trim
+            dtAct = IntLSD.InsertarFiscaObras(lsArray)
+        ElseIf (ViewState("ModoCFOP") = "Modifica") Then
+            Dim lsArray(2) As String
+            lsArray(0) = CInt(txtIdRegistro.Text)
+            lsArray(1) = ddlEstadoFiscObras.SelectedValue
+            lsArray(2) = Funciones.GetUsuarioIdUsuarioRegistra.ToString.Trim
+            dtAct = IntLSD.ModificarFiscaObras(lsArray)
+            Funciones.ModalAlert("Registro actualizado")
+        Else
+            Funciones.ModalAlert("Error condicionales")
+        End If
+        LimpiarDatosCFOP()
+        CargarPanelAdminFiscObras()
+    End Sub
+
+    Private Sub LimpiarDatosCFOP()
+        ddlFisca.SelectedIndex = -1
+        ddlProvincia.SelectedIndex = -1
+        ddlEstadoFiscObras.SelectedIndex = 0
+        ddlFisca.Enabled = True
+        ddlProvincia.Enabled = True
+        CargarPanelAdminFiscObras()
+    End Sub
+
+    Private Sub gvFiscaObrasI_PageIndexChanging(sender As Object, e As GridViewPageEventArgs) Handles gvFiscaObrasI.PageIndexChanging
+        gvFiscaObrasI.PageIndex = e.NewPageIndex
+        CargarPanelAdminFiscObras()
+    End Sub
+
+    Private Sub gvFiscaObrasA_PageIndexChanging(sender As Object, e As GridViewPageEventArgs) Handles gvFiscaObrasA.PageIndexChanging
+        gvFiscaObrasA.PageIndex = e.NewPageIndex
+        CargarPanelAdminFiscObras()
+    End Sub
+
+    Private Sub LnkLimpiarFiscOb_Click(sender As Object, e As EventArgs) Handles LnkLimpiarFiscOb.Click
+        LimpiarDatosCFOP()
+    End Sub
+
+    Private Sub gvFiscaObrasA_RowCommand(sender As Object, e As GridViewCommandEventArgs) Handles gvFiscaObrasA.RowCommand
+        ddlFisca.Enabled = False
+        ddlProvincia.Enabled = False
+        Dim rowIndex As Integer
+        ViewState("ModoCFOP") = "Modifica"
+
+        If e.CommandName = "Select" Then
+            While rowIndex > 9
+                rowIndex = rowIndex - 10
+            End While
+            'Dim IdRegistro As String = e.CommandArgument.ToString
+            rowIndex = Convert.ToInt32(e.CommandArgument)
+            txtIdRegistro.Text = gvFiscaObrasA.DataKeys(rowIndex)("IdRegistro").ToString()
+            ddlFisca.SelectedValue = gvFiscaObrasA.DataKeys(rowIndex)("IdUsuarioFiscalizador").ToString()
+            ddlProvincia.SelectedValue = gvFiscaObrasA.DataKeys(rowIndex)("IdProvincia").ToString()
+            Dim estado As String = gvFiscaObrasA.DataKeys(rowIndex)("Estado").ToString()
+            ddlEstadoFiscObras.SelectedValue = IIf(estado = "ACTIVO", "A", "I")
+        End If
+    End Sub
+
+    Private Sub gvFiscaObrasI_RowCommand(sender As Object, e As GridViewCommandEventArgs) Handles gvFiscaObrasI.RowCommand
+        ddlFisca.Enabled = False
+        ddlProvincia.Enabled = False
+        Dim rowIndex As Integer
+        ViewState("ModoCFOP") = "Modifica"
+
+        If e.CommandName = "Select" Then
+            While rowIndex > 9
+                rowIndex = rowIndex - 10
+            End While
+            'Dim IdRegistro As String = e.CommandArgument.ToString
+            rowIndex = Convert.ToInt32(e.CommandArgument)
+            txtIdRegistro.Text = gvFiscaObrasI.DataKeys(rowIndex)("IdRegistro").ToString()
+            ddlFisca.SelectedValue = gvFiscaObrasI.DataKeys(rowIndex)("IdUsuarioFiscalizador").ToString()
+            ddlProvincia.SelectedValue = gvFiscaObrasI.DataKeys(rowIndex)("IdProvincia").ToString()
+            Dim estado As String = gvFiscaObrasI.DataKeys(rowIndex)("Estado").ToString()
+            ddlEstadoFiscObras.SelectedValue = IIf(estado = "ACTIVO", "A", "I")
+        End If
+    End Sub
+End Class
